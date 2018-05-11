@@ -14,8 +14,19 @@ var nomLimit =13;
 
 var nomInvite;
 var numNom ;
-var lgn=0 ;
 
+var j2mF;
+var CompF;
+var FootageF ;
+var LetterF ;
+var ClonerF;
+//
+// ////////////////////////////////
+//
+// /// VAR COMPO //////////////////////////
+var COMP ;
+var LetterComp;
+var ClonerComp ;
 
 //var fold;
 ///////////////////////////////////////////
@@ -25,124 +36,136 @@ function writter(){
   nomInvite = trim(nomText);
   numNom = nomInvite.split(' ');
 }
-proj.numItems==0? proj.items.addFolder("J2M") : false;
+
 
 #include "J2M/functionJ2M.jsx"
+var psd = new ImportOptions(File("./J2M/img/BG.psd"));
+
+function addElements(){
+
+
+proj.numItems==0? proj.items.addFolder("J2M") : false;
 //--------------------------
 //  VAR FOLDER /////////////////////
-var j2mF = findFolder("J2M",this)
-var CompF = findFolder("Comp",this, j2mF)
-var FootageF = findFolder("Footage",this, j2mF)
-var LetterF = findFolder("Letter",this, j2mF)
-var ClonerF = findFolder("_cloner",this, LetterF)
+j2mF = findFolder("J2M",this)
+CompF = findFolder("Comp",this, j2mF)
+FootageF = findFolder("Footage",this, j2mF)
+LetterF = findFolder("Letter",this, j2mF)
+ClonerF = findFolder("_cloner",this, LetterF)
 //
 // ////////////////////////////////
 //
 // /// VAR COMPO //////////////////////////
-var COMP = findComp("COMP",this,true,"",CompF);
-var LetterComp = findComp("Letter",this,true,"",ClonerF);
-var ClonerComp = findComp("0cloner",this,true,"",ClonerF);
+COMP = findComp("COMP",this,true,"",CompF);
+LetterComp = findComp("Letter",this,true,"",ClonerF);
+ClonerComp = findComp("0cloner",this,true,"",ClonerF);
 
 //alert(COMP);
 /// ADD BG /////////////////////////////////
-var psd = new ImportOptions(File("./J2M/img/BG.psd"));
+// var psd = new ImportOptions(File("./J2M/img/BG.psd"));
 var bgPic;
 bgimport();
-
 COMP.openInViewer();
+
 // ADD ELEMENT ////////////////////
 addElement(LetterComp);
 addElement(ClonerComp);
 
-
-
+}
 ///////////////////////////////////////////////
 
 // / ADD LETTER FUNCTION /////////////////////////////
+var h =0;
+var lgn;
 function addLetter(){
-
+  layerDel(COMP);
+  h=0;
   if(nomInvite != undefined){
 
     var count;
-    lgne()
-
-    var h =0;
     var x=0;
+    var z=0,c=0,r=0;
 
   //  mrah oua nn marimarialoinaloin aloin marialoin
-    while (h<lgn){
+  // hamed houdini maria miugifdfuiiuyfd houdini
+    while(z< numNom.length){
       var l=1;
+      var counter=0;
       for (var y=0; y<numNom.length; y++){
 
         y<numNom.length-1 && y>0 ? count = 1 : count =0;
-        if (numNom[y].length > nomLimit-(x-1)) {
-          x=0;
-          h++
-        }
-        for (var i= 0; i<numNom[y].length; i++){
+        z++;
 
-          if (numNom.length>0 && x == numNom[y].length ){
-            if (numNom[y+count].length > nomLimit-x && lgn>1) {
+        for (var i= 0; i<numNom[y].length; i++){
+          c++;
+          var lim;
+          numNom[y].length > 13 ? lim = numNom[y].length : lim =13;
+          if (c > lim &&  numNom[y+count].length > (14-c)) {
+            c=1;
+            x =0;
+            h++;
+          }
+
+          var posX = Pos+((letterWidth+lspaceW)*x);
+          var posY = Pos+((letterHeight+lspaceH)*(h));
+
+          letter =findComp(numNom[y][i],this, true, ClonerComp, LetterF);
+          var letterX = COMP.layers.add(letter);
+          var offTime = 0.12*l;
+          letterX.transform.opacity.expression = "linear(time,"+offTime+","+offTime+"+0.12,0,100);";
+          letterX.startTime = offTime;
+          letterX.transform.scale.setValue([sclPercent,sclPercent]);
+          letterX.transform.position.setValue([posX,posY]);
+
+          if (numNom[y].length == (i+1) && y<numNom.length && COMP.layers.length != nomInvite.replace(" ","").length+1){
+            x++;
+            c++; i=-1; y++;
+            //y++;
+            y>=numNom.length ? count = 1 : count =0;
+            if(numNom[y-count].length >= 14 || numNom[y-count].length> lim-c){counter++ }
+            if (counter == 1) {
+              c=0;
+              x =-1;
               h++;
             }
           }
-          if (numNom[y].length == i && y<numNom.length){
-              i=0;
-              l++;
-          }
-             var posX = Pos+((letterWidth+lspaceW)*x);
-             var posY = Pos+((letterHeight+lspaceH)*h);
-
-             if(x == nomLimit && numNom[y].length< nomLimit-x && numNom.indexOf(numNom[y]>0) ){
-                  x= 0;
-                  h++;
-              }else if(numNom.length>0 && numNom[y+count].length > nomLimit-x ){
-                    if (i == numNom[y].length ) {
-                      x=0;
-                      h++;
-                    }
-                }
-                letter =findComp(numNom[y][i],this, true, ClonerComp, LetterF);
-                var letterX = COMP.layers.add(letter);
-                var offTime = 0.12*l
-                letterX.transform.opacity.expression = "linear(time,"+offTime+","+offTime+"+0.12,0,100);";
-                letterX.startTime = offTime;
-                letterX.transform.scale.setValue([sclPercent,sclPercent]);
-                letterX.transform.position.setValue([posX,posY]);
-                /// SPACE BETWEEN WORD ///////////////
-                if (numNom[y].length-1 == i && y<numNom.length-1){
-                  x++;
-                };//--------------------------------
-          //} // END ELSE
           x++;
           l++;
-        }// END FOR
-        if (x==nomInvite.length && nomInvite.length<= nomLimit){
-          h++
+
+          counter=0;
+          if( y ==numNom.length && i == -1){break};
         }
-        l=l;
-      }// END FOR
-      if (x == numNom[numNom.length-1].length-1){
+        x++;
         break;
-      }// break WHILE
-    } // END WHILE
-    //alert(h)
+      }
+      break;
+    }//hamed houdini maria miugifdfuiiuyfd houdini
+
     nomInvite="";
   }else{
 
-      var dlog = new Window("palette");
-      dlog.size = [320,100];
-      dlog.add("statictext", undefined , "We are closing in 2 seconds.");
-      dlog.show();
-    // Have a nap:
-      $.sleep(3000);
-    // Closing the dialog:
-      dlog.close();
-    //return false;
+    return false;
   }
   COMP.openInViewer();
-} // END ADDLETTER FUNCTION
 
+  h=1
+  for(var w=COMP.layers.length; w>0; w--){
+    var layeur = COMP.layer(w);
+    layeur.transform.position.dimensionsSeparated =  true;
+    if (layeur.name.length==1 ) {
+      var pos = layeur.transform.yPosition.value;
+      var layeOld = COMP.layer(w+1);
+      var posOld = layeOld.name.length ==1 ? layeOld.transform.yPosition.value: pos;
+      if(pos == posOld){
+        continue;
+      }else if(pos != posOld){
+        h++;
+      }
+    }
+    if(w==1){break};
+  }
+} // END ADDLETTER FUNCTION
+lgn =h;
 /// TAKE WORD FUNCTION /////////////////////////
 var wField =[];
 var words =new Array;
@@ -160,56 +183,131 @@ function takeWord(){
 words =wField;
 ///////////////////////////////////
 
+function removeElement(){
+  j2mF.remove();
+}
+
+
+
 ///  ADD WORD ///////////////////////////////
 function addWord(){
-
-lgne();
-  var nullControl = elementComp(COMP,"null","Control");
+  lgn =h;
+  var nullControl;
+  var motControl;
+  var textMaster;
+  for (var i = 1; i <= COMP.layers.length; i++) {
+    if (COMP.layer(i).name.indexOf("Control") != -1) {
+      nullControl= COMP.layer(i);
+      motControl = COMP.layer("Mots")
+      //alert(motControl);
+      break;
+    }else if(i==COMP.layers.length ){
+      motControl = elementComp(COMP,"null","Mots");
+      nullControl = elementComp(COMP,"null","Control");
+      break;
+    }
+  }
   nullControl.transform.position.setValue([0,0]);
 
-  var offsetWord = addControler(this, nullControl,"Décalage Mots", "Slider",20 );
-  var offsetLetter = addControler(this, nullControl,"Décalage Lettres", "Slider",100 );
-  var  offsetAnim = addControler(this, nullControl,"Décalage Animation", "Slider",50 );
+  var Oln = "Séparateur";
+  var Ow = "Décalage Mots";
+  var Ol = "Décalage Lettres";
+  var Oa = "Décalage Animation";
+  var Tc = "Transition couleur";
 
-  if (nomInvite.length <= nomLimit ) {
-    lgn--;
-  }
+  var offsetWord = addControler(this, nullControl, Ow , "Slider", 20 );
+  var offsetLetter = addControler(this, nullControl, Ol , "Slider", 50 );
+  var offsetAnim = addControler(this, nullControl, Oa , "Slider", 50 );
+  var colorTransi = addControler(this, nullControl, Tc , "Slider", 25 );
+  var offsetline = addControler(this, nullControl, Oln , "Slider", 0 );
+
+  var offsetMots= addControler(this, motControl, "Espacement Y" , "Slider", 0 );
 
   var u;
   for (var i = 1; i <= words.length; i++) {
-    lgn++
+    //lgn++
 
     for (var j = 0; j < words[i-1].length; j++) {
 
       for (var k = COMP.layers.length; k >= 1; k--) {
 
-        u = (( (11/25)+(offsetWord/10) )*(i-1))+(0.04*(j*( j /5)));
-        var posX = Pos+((letterWidth+lspaceW)*j);
-        var posY = Pos+((letterHeight+lspaceH)*lgn);
+        var layr = COMP.layer(k);
+        if (layr.name.length ==1 && layr.name == words[i-1][j] ) {
 
-        var codePosX =
-        "var inc1="+i+";\
-        var inc2 ="+j+";\
-        "
-
-        if (COMP.layer(k).name.length ==1 && COMP.layer(k).name == words[i-1][j]) {
-
-          var layr = COMP.layer(k);
           layr.motionBlur = true;
-          layr.property("Position").dimensionsSeparated = true;
+          //layr.property("Position").dimensionsSeparated = true;
           var initPosx = layr.transform.xPosition.value;
           var initPosy = layr.transform.yPosition.value;
-          layr.transform.xPosition.expression = "ease(time,5+"+u+",6+"+u+","+initPosx+","+posX+");";
-          layr.transform.yPosition.expression = "ease(time,5+"+u+",6+"+u+","+initPosy+","+posY+");";
+
+          var Ypos = Pos+((letterHeight+lspaceH)*lgn);
+          var codeControlY =
+          "var posiY = "+Ypos+";\
+          var wd = "+i+"-1;\
+          var FXword = effect(\"Décalage Mots\")(1);\
+          var bblack =11/25;\
+          var u = (( bblack +(FXword/10) ) *( wd) );\
+          var controlY= [0,0]";
+
+
+          // PASTE IN CONTROL LAYER => change to Control_3 /////////////
+          /*var posiY = 851;
+          var wd = 2-1;
+          var FXword = effect("Décalage Mots")(1);
+          var bblack =11/25;
+          var u = (( bblack +(FXword/10) ) *( wd) );
+          var controlY= [0,0];
+          if (posiY > 850) {
+            controlY = ease(time,5+u,6+u,[0,0],[0,-300]);
+          };
+         //
+         var count= parseInt(name.split("_")[1]);
+         var h=0;
+         var i;
+         for (i=0; i<count; i){
+           if(time ==5+u){
+             i++;
+             break;
+           }
+         }
+         if (i==1 && time>5+u) {
+           controlY = ease(time,5+u,6+u,[0,0],[0,-300]);
+         }else if(i==2 && time>5+u)
+         u = (( bblack +(FXword/10) ) *( wd) );
+         controlY;*/
+
+         //////////////////////////////////////
+
+          nullControl.name = "Control_"+lgn;
+          nullControl.transform.position.expression= codeControlY;
+
+          #include "J2M/codeJ2M.jsx"
+
+          var codePosX = writeCode("PositionX");
+          var codePosY = writeCode("PositionY");
+
+          var codeColor= writeCode("color");
+
+          var codeLumi = writeCode("luminance");
+          var codeSatur = writeCode("saturation");
+
+          layr.transform.xPosition.expression = codePosX;
+          layr.transform.yPosition.expression = codePosY;
+          layr.Effects.addProperty("ADBE Change Color").name = "Transition";
+          layr.effect("Transition")(5).expression = codeColor;
+          layr.effect("Transition")(6).setValue(25);
+          layr.effect("Transition")(4).expression = codeSatur;
+          layr.effect("Transition")(3).expression = codeLumi;
           layr.name = layr.name+"-exp"
           layr.setParentWithJump(nullControl);
+
+          nullControl.moveToBeginning();
           break;
         }else{
           continue;
         }
       }
     }
-    //h++
+    lgn++;
   }
 
 }
@@ -221,6 +319,7 @@ function createUI(thisObj){
          var myPanel =  thisObj;
          res = "group{orientation:'column', alignment:['fill','fill'],alignChildren:['center','top'],\
                     picL: IconButton{type:'image',bounds:{x:10, y:10, width:360, height:72}},\
+                    btnElement: Button{text :'Créer éléments', alignment:'center',bounds:{x:0, y:0, width:160, height:30}},\
                         myTab: Group{ orientation: 'column', alignment:'left',\
                             myText: Panel{orientation:'row',\
                                 staticName: StaticText { text:'Nom:' },\
@@ -246,6 +345,10 @@ function createUI(thisObj){
          myPic.open("r","","");
 
          myBin = myPic.read().replace("(new String(", "").replace(/\)\)$/, "");
+         if(myBin.length ==0){
+           alert("le Fichier \"_ssl.xff\" est manquant !!")
+           return false
+         }
 
          myPanel.margins=2;
 
@@ -277,8 +380,14 @@ function createUI(thisObj){
          }
 
          function minus_btn() {
+           if (this.parent.parent.children.length >1) {
+             this.parent.edit.text="";
              maingroup.remove(this.parent);
              myPanel.layout.layout(true);
+           }else{
+             this.parent.edit.text ="";
+             return false;
+           }
          }
          //----------------------------------------------------
 
@@ -292,6 +401,7 @@ function createUI(thisObj){
 
          //Defaults
         // #include "J2M/functionJ2M.jsx"
+         myPanel.grp.btnElement.onClick = addElements;
          myPanel.grp.myTab.myText.editName.onChanging = writter;
          myPanel.grp.myTab.myText.btnApply1.onClick = addLetter;
 
