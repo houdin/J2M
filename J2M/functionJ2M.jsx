@@ -245,48 +245,21 @@ function addControler(effet, layeur,nom, controler, valeur){
   effet = layeur.effect(nom)(1);
   return effet;
 }
+
 //////////////////////////////////////////////////////////
 
 ///  DELETE LAYER FUNCTION ////////////////////////////////
-function layerDel(COMP){
-  var CpL= COMP.layers.length;
-  for( var i=CpL; i>= 1; i--){
-    if (COMP.layer(i).name.length ==1 || COMP.layer(i).name.indexOf('-exp')>0 )
-    {COMP.layer(i).remove();
-    }else{continue;}
+function layerDel(compo){
+  for( var i=compo.layers.length; i>= 1; i--){
+    var layr = compo.layer(i);
+    if (layr.name.length ==1 || layr.name.indexOf('-exp')!=-1 || layr.name.indexOf('Control')!=-1 ){
+      layr.remove();
+    }else if(i<= 1){ break; }
   }
 }
 //////////////////////////////////////////////////////
 
-///   LGN FUNCTION ///////////////////////////////
-function lgne(){
-  lgn=0;
-  if (parseInt(nomInvite.length/nomLimit) > 0 ) {
-    for (var i =0; i<numNom.length ;i++){
-      i<numNom.length-1 && i>0 ? count = 1 : count =0;
-      //||numNom[i].length >=nomLimit
-      if(numNom[i+count].length > nomLimit-(numNom[i].length) && i<numNom.length-1 ){
-        lgn++;
-        continue;
-      }else if (numNom[i+count].length <= 14-numNom[i].length) {
-        if (numNom.length<3 && nomInvite.length <= 14) {
-          lgn=1;
-          break;
-        }else if (nomInvite.length <= nomLimit) {
-          lgn=1;
-          break;
-        }
-      }else if (numNom.length<3 && nomInvite.length <= 16) {
-        lgn=2;
-        break;
-      }
-    }
-  }else{
-    lgn = 1;
-  }
 
-}
-////////////////////////////////////////////////////////
 
 // -- URL //////////////////////////
 var winBrowserCmd = "C:/Program Files/Internet Explorer/iexplore.exe";
