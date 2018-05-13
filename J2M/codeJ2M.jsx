@@ -6,17 +6,20 @@ function writeCode(data){
   if( data == "PositionX"){
     PosiCode = "ease(time,5+u,6+u,initPosx,posX);";
   }else if(data == "PositionY"){
-    PosiCode = "ease(time,5+u,6+u,initPosy,posY+thisComp.layer(1).effect(\"Séparateur\")(1));";
+    PosiCode = "ease(time,5+u,6+u,initPosy,posY+thisComp.layer(\"Control\").effect(\"Séparateur\")(1));";
   }
-  var codePos =
+  var codePos;
+  if( data.indexOf("Position") != -1 || data.indexOf("color") != -1 ||
+  data.indexOf("luminance") != -1 || data.indexOf("saturation") != -1 ){
+  codePos =
   "var wd = "+i+"-1;\
   var ltt = "+j+";\
   var lgn = "+lgn+";\
   var initPosx = "+initPosx+";\
   var initPosy = "+initPosy+";\
-  var FXword = thisComp.layer(1).effect(\"Décalage Mots\")(1);\
-  var FXletter = thisComp.layer(1).effect(\"Décalage Lettres\")(1)/50;\
-  var FXanimation = (100-thisComp.layer(1).effect(\"Décalage Animation\")(1))/10;\
+  var FXword = thisComp.layer(\"Control\").effect(\"Décalage Mots\")(1);\
+  var FXletter = thisComp.layer(\"Control\").effect(\"Décalage Lettres\")(1)/50;\
+  var FXanimation = (100-thisComp.layer(\"Control\").effect(\"Décalage Animation\")(1))/10;\
   var bblack =11/25;\
   var Pos = 240;\
   var sclPercent = 87;\
@@ -29,24 +32,34 @@ function writeCode(data){
   var posY = Pos+((letterHeight+lspaceH)*lgn);\
   "+PosiCode+";";
 
+
   var codeTransi;
   //var codeLumi ;
   //var codeSatur;
   if (data =="color") {
-    codeTransi = "comp(\"0cloner\").layer(\"Rec\").content(\"Rectangle 1\").content(\"Fill 1\").color";
+    codeTransi = "comp(\"0cloner\").layer(\"Rec\").content(\"Fill 1\").color";
   }else if(data =="luminance"){
     codeTransi = "linear(time, t1, t1+transiColor, 0, -5)";
   }else if(data == "saturation"){
     codeTransi = "linear(time, t1, t1+transiColor, 0, -100)";
   }
-  //var codeColor = "comp(\"0cloner\").layer(\"Rec\").content(\"Rectangle 1\").content(\"Fill 1\").color";
 
   var codeColor =
   "var t1, t2;\
   var inc ="+i+";\
-  var transiColor = thisComp.layer(1).effect(\"Transition couleur\")(1)/100;\
+  var transiColor = thisComp.layer(\"Control\").effect(\"Transition couleur\")(1)/100;\
   inc ==1 ? t1 = 5-(11/25):t1= 5+(2*(inc-1) );\
   "+codeTransi+";";
+
+}
+
+// // LETTER CODE //////////////////////////
+
+var codeLRecSize =
+"var x = thisComp.width-content(\"Stroke 1\").strokeWidth;\
+var y = thisComp.height-content(\"Stroke 1\").strokeWidth;\
+[x,y]";
+var codeLRecPos = "[thisComp.width/2,thisComp.height/2]";
 
 
 
@@ -67,8 +80,27 @@ function writeCode(data){
     case "saturation":
       code = codeColor;
       break;
+    //---------------------------
+    case "Letter-Letter":
+      code = codeLRecSize;
+      break;
+    case "Letter-Rec_size":
+      code = codeLRecSize;
+      break;
+    case "Letter-Rec_pos":
+      code = codeLRecPos;
+      break;
+    case "0cloner-Letter":
+      code = codeColor;
+      break;
+    case "0cloner-Rec":
+      code = codeColor;
+      break;
+
     default:
 
   }
+
+
   return code;
 }
