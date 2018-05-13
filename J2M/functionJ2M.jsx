@@ -131,75 +131,123 @@ function addLayr(compo, layeName,laye, move){
 ///  ADD COMP ELEMENT FUNCTION ///////////////////////////
 var codeClone ="eval(\"@JSXBIN@ES@2.0@MyBbyBn0ABJAnAdCzChdhdBXzGjMjFjOjHjUjICfXzEjOjBjNjFDfjzIjUjIjJjTiDjPjNjQEfnndBFdAFdjE0DzAFByB\")";
 function elementComp(compo, laye, layeName,preset, text){
+  #include "codeJ2M.jsx";
   var layeur;
+  var composi;
+  if(compo == "Letter"){
+    composi = LetterComp;
+  }else if(compo == "0cloner"){
+    composi = ClonerComp;
+  }
   switch (laye.toLowerCase()) {
     case "shape":
-      layeur= compo.layers.addShape();
+      layeur= composi.layers.addShape();
+      var contents = layeur.property("ADBE Root Vectors Group"); // Accessing the contents of the shape layer
+      var shapeRect = contents.addProperty("ADBE Vector Shape - Rect"); // Adding a rectangle to the shape layer
+      var shapeStroke = contents.addProperty("ADBE Vector Graphic - Stroke");
+      var shapeFill = contents.addProperty("ADBE Vector Graphic - Fill");
+      //shapeRect = contents.property("ADBE Vector Shape - Rect"); // adding fill invalidates shapeRect
+      //shapeRect = contents.property("ADBE Vector Shape - Rect"); // adding fill invalidates shapeRect
+      //-------------------------------------
+      if (layeName == "Rec") {
+        if(compo== "Letter"){
+
+          layeur.content("Rectangle Path 1").size.expression =writeCode("Letter-Rec_size");
+          layeur.content("Rectangle Path 1").position.setValue([0, 0]);
+          layeur.content("Fill 1").color.setValue([0.117,0.39,0.53]);
+          layeur.content("Stroke 1").strokeWidth.setValue(3);
+          layeur.content("Stroke 1").color.setValue([0.99,0.91,0.11]);
+          layeur.transform.position.expression = writeCode("Letter-Rec_pos");
+
+        }else if (compo== "0cloner") {
+          var lt = "comp(\"Letter\").layer(\"Rec\")";
+          layeur.content("Rectangle Path 1").size.expression =lt+".content(\"Rectangle Path 1\").size";
+          layeur.transform.scale.expression =lt+".transform.scale";
+          layeur.content("Rectangle Path 1").position.expression = lt+".content(\"Rectangle Path 1\").position";
+          layeur.content("Fill 1").color.expression =lt+".content(\"Fill 1\").color";
+          layeur.content("Stroke 1").strokeWidth.expression =lt+".content(\"Stroke 1\").strokeWidth";
+          layeur.content("Stroke 1").color.expression =lt+".content(\"Stroke 1\").color";
+          layeur.transform.position.expression = lt+".transform.position";
+        }
+      }else if (layeName == "Dark"){
+        layeur.content("Rectangle Path 1").size.expression = "[164.5,180]";
+        layeur.content("Rectangle Path 1").position.setValue([0, 0]);
+        layeur.content("Fill 1").color.setValue([0,0,0]);
+        layeur.content("Stroke 1").strokeWidth.setValue(0);
+        layeur.content("Stroke 1").color.setValue([0,0,0]);
+        layeur.transform.position.expression = "[0,thisComp.height]";
+        layeur.transform.rotation.expression = "-46.8";
+        layeur.transform.opacity.expression = "7";
+        layeur.blendingMode = BlendingMode.CLASSIC_COLOR_BURN;
+      }
       break;
     case "null":
       layeur= compo.layers.addNull();
       break;
     case "text":
-      if(layeName == "clone"){
-        layeur= compo.layers.addText();
-        layeur.transform.scale.setValue([100,100]);
-        layeur.transform.position.setValue([110,85]);
-        layeur.transform.rotation.setValue(-90);
-        layeur.transform.opacity.expression = codeClone;
-        layeur.shy = true;
-        var textProp = layeur.property("Source Text");
-        var textDocument = textProp.value;
-        textDocument.fontSize = 18;
-        textDocument.fillColor = [1, 1, 1];
-        textDocument.font = "AvantGardeMedium";
-        textDocument.applyStroke = false;
-        textDocument.applyFill = true;
-        textProp.setValue(textDocument);
-        layeur.name = layeName;
-        compo.hideShyLayers =true;
-        layeur.locked = true;
-      }else{
-      layeur= compo.layers.addText();
-      layeur.transform.scale.setValue([93,93]);
-      layeur.transform.position.setValue([60,95.5]);
+      layeur= composi.layers.addText();
       var textProp = layeur.property("Source Text");
       var textDocument = textProp.value;
-      //myString = "Happy holidays!";
-      //textDocument.resetCharStyle();
-      textDocument.fontSize = 124;
       textDocument.fillColor = [1, 1, 1];
       textDocument.font = "AvantGardeMedium";
       textDocument.applyStroke = false;
       textDocument.applyFill = true;
-      //textDocument.text = myString;
       textDocument.justification = ParagraphJustification.CENTER_JUSTIFY;
-      //textDocument.tracking = 50;
-      textProp.setValue(textDocument);
+      if (layeName == "Letter") {
+        textDocument.fontSize = 115;
+        textProp.setValue(textDocument);
+        if(compo == "Letter"){
+          layeur.text.sourceText.expression = "\"X\"";
+          var codeLetterPos =
+          "var x = thisComp.width/2;\
+          var y = transform.position[1];\
+          [x ,y]";
+          layeur.transform.position.setValue([0,95.5]);
+          layeur.transform.position.expression = codeLetterPos;
+        }else if(compo == "0cloner"){
+          layeur.text.sourceText.expression = "thisComp.name == \"0cloner\" ? \"?\" : thisComp.name;";
+          layeur.transform.position.expression = "comp(\"Letter\").layer(\"Letter\").transform.position;";
+          layeur.transform.scale.expression = "comp(\"Letter\").layer(\"Letter\").transform.scale;";
+        }
+
+      }else if(layeName == "clone"){
+        layeur.transform.scale.setValue([100,100]);
+        layeur.transform.position.setValue([110,85]);
+        layeur.transform.position.dimensionsSeparated = true;
+        layeur.transform.yPosition.expression = "thisComp.height/2"
+        layeur.transform.rotation.setValue(-90);
+        layeur.transform.opacity.expression = codeClone;
+
+        textDocument.fontSize = 18;
+        textProp.setValue(textDocument);
+        layeur.name = layeName;
+        var tex;
+        if(compo == "Letter"){
+          tex= "'REGLAGE'";
+        }else if(compo == "0cloner"){
+          tex="'CLONE'";
+        }
+        layeur.text.sourceText.expression = tex;
+        layeur.shy = true;
+        composi.hideShyLayers =true;
+        layeur.locked = true;
       }
       break;
     case "solid":
-      layeur= compo.layers.addSolid([1,1,1],layeName, compo.width,compo.height,1)
+      layeur= composi.layers.addSolid([1,1,1],layeName, composi.width,composi.height,1)
       break;
     case "solidfx":
-      layeur= compo.layers.addSolid([1,1,1],layeName, compo.width,compo.height,1)
+      layeur= composi.layers.addSolid([1,1,1],layeName, composi.width,composi.height,1)
       layeur.adjustmentLayer = true;
       break;
     default: null;
 
   }
   if(layeName != "clone"){
-  layeur.name = layeName;
+    layeur.name = layeName;
+    layeName == "Dark" ? layeur.locked = true : false;
   }
-  if (text != undefined) {
-    layeur.text.sourceText.expression = text;
-  }
-  if (preset != undefined) {
-    if(compo == LetterComp){
-    layeur.applyPreset(File("./J2M/Bin/_lett_"+preset+".ffx"));
-  }else if(compo == ClonerComp){
-    layeur.applyPreset(File("./J2M/Bin/_cln_"+preset+".ffx"));
-    }
-  }
+
   return layeur;
 }
 ///////////////////////////////////////////////////////////////
@@ -208,29 +256,25 @@ function elementComp(compo, laye, layeName,preset, text){
 ///   ADD ELEMENT COMP ////////////////////////////////////
 
 function addElement(compo){
-  var tex;
-  if(compo == LetterComp){
-  tex= "'REGLAGE'";
-}else if(compo == ClonerComp){
-  tex="'CLONE'";
-  }
-  if (compo.layers.length >0) {
-    for (var i = 1; i <= compo.layers.length; i++) {
-      if (compo.layer(i).name=="Letter") {
+  var compi =findComp(compo, this)
+
+  if (compi.layers.length >0) {
+    for (var i = 1; i <= compi.layers.length; i++) {
+      if (compi.layer(i).name=="Letter") {
         break;
-      }else if (i== compo.layers.length){
-        elementComp(compo,"shape","Rec", "rec");
-        elementComp(compo,"solidFX","FX", "fx");
-        elementComp(compo,"text","Letter", "tx");
-        elementComp(compo,"text","clone", undefined,tex);
+      }else if (i== compi.layers.length){
+        elementComp(compo,"shape","Rec");
+        elementComp(compo,"shape","Dark");
+        elementComp(compo,"text","Letter");
+        elementComp(compo,"text","clone");
         break;
       }
     }
   }else {
-    elementComp(compo,"shape","Rec", "rec");
-    elementComp(compo,"solidFX","FX", "fx");
-    elementComp(compo,"text","Letter", "tx");
-    elementComp(compo,"text","clone", undefined,tex);
+    elementComp(compo,"shape","Rec");
+    elementComp(compo,"shape","Dark");
+    elementComp(compo,"text","Letter");
+    elementComp(compo,"text","clone");
 
   }
 }
