@@ -68,8 +68,8 @@ bgimport();
 COMP.openInViewer();
 
 // ADD ELEMENT ////////////////////
-addElement(LetterComp);
-addElement(ClonerComp);
+addElement("Letter");
+addElement("0cloner");
 
 }
 ///////////////////////////////////////////////
@@ -207,7 +207,9 @@ function addWord(){
       break;
     }
   }
+  var codeNull ="[0 , y = transform.position[1]]";
   nullControl.transform.position.setValue([0,0]);
+  nullControl.transform.position.expression = codeNull;
 
   var Oln = "Séparateur";
   var Ow = "Décalage Mots";
@@ -224,9 +226,11 @@ function addWord(){
   var offsetMots= addControler(this, motControl, "Espacement Y" , "Slider", 0 );
 
   var u;
+  var Ypos;
+  var codeControlY;
+  var tm =0;
   for (var i = 1; i <= words.length; i++) {
     //lgn++
-
     for (var j = 0; j < words[i-1].length; j++) {
 
       for (var k = COMP.layers.length; k >= 1; k--) {
@@ -239,46 +243,13 @@ function addWord(){
           var initPosx = layr.transform.xPosition.value;
           var initPosy = layr.transform.yPosition.value;
 
-          var Ypos = Pos+((letterHeight+lspaceH)*lgn);
-          var codeControlY =
-          "var posiY = "+Ypos+";\
-          var wd = "+i+"-1;\
-          var FXword = effect(\"Décalage Mots\")(1);\
-          var bblack =11/25;\
-          var u = (( bblack +(FXword/10) ) *( wd) );\
-          var controlY= [0,0]";
+          Ypos = Pos+((letterHeight+lspaceH)*lgn);
 
-
-          // PASTE IN CONTROL LAYER => change to Control_3 /////////////
-          /*var posiY = 851;
-          var wd = 2-1;
-          var FXword = effect("Décalage Mots")(1);
-          var bblack =11/25;
-          var u = (( bblack +(FXword/10) ) *( wd) );
-          var controlY= [0,0];
-          if (posiY > 850) {
-            controlY = ease(time,5+u,6+u,[0,0],[0,-300]);
-          };
-         //
-         var count= parseInt(name.split("_")[1]);
-         var h=0;
-         var i;
-         for (i=0; i<count; i){
-           if(time ==5+u){
-             i++;
-             break;
-           }
-         }
-         if (i==1 && time>5+u) {
-           controlY = ease(time,5+u,6+u,[0,0],[0,-300]);
-         }else if(i==2 && time>5+u)
-         u = (( bblack +(FXword/10) ) *( wd) );
-         controlY;*/
 
          //////////////////////////////////////
 
-          nullControl.name = "Control_"+lgn;
-          nullControl.transform.position.expression= codeControlY;
+          nullControl.name = "Control";
+          //nullControl.transform.position.expression= codeControlY;
 
           #include "J2M/codeJ2M.jsx"
 
@@ -307,7 +278,11 @@ function addWord(){
         }
       }
     }
+
     lgn++;
+
+
+    // alert(Ypos)
   }
 
 }
@@ -319,7 +294,10 @@ function createUI(thisObj){
          var myPanel =  thisObj;
          res = "group{orientation:'column', alignment:['fill','fill'],alignChildren:['center','top'],\
                     picL: IconButton{type:'image',bounds:{x:10, y:10, width:360, height:72}},\
+                    createTab: Group{ orientation: 'row', alignment:'center',\
                     btnElement: Button{text :'Créer éléments', alignment:'center',bounds:{x:0, y:0, width:160, height:30}},\
+                    btnDel: Button{text :'Supprimer éléments', alignment:'center',bounds:{x:0, y:0, width:160, height:30}},\
+                    },\
                         myTab: Group{ orientation: 'column', alignment:'left',\
                             myText: Panel{orientation:'row',\
                                 staticName: StaticText { text:'Nom:' },\
@@ -339,7 +317,7 @@ function createUI(thisObj){
                             },\
                       },\
                 }";
-         var myPic = new File('./J2M/Bin/_ssl.ffx');
+         var myPic = new File('./J2M/_ssl.ffx');
          var myBin;
          myPic.encoding="BINARY";
          myPic.open("r","","");
@@ -401,7 +379,8 @@ function createUI(thisObj){
 
          //Defaults
         // #include "J2M/functionJ2M.jsx"
-         myPanel.grp.btnElement.onClick = addElements;
+         myPanel.grp.createTab.btnElement.onClick = addElements;
+         myPanel.grp.createTab.btnDel.onClick = removeElement;
          myPanel.grp.myTab.myText.editName.onChanging = writter;
          myPanel.grp.myTab.myText.btnApply1.onClick = addLetter;
 
